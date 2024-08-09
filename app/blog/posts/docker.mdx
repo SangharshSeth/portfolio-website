@@ -31,9 +31,10 @@ EXPOSE 3000
 
 # Start the application with live reload
 CMD ["pnpm", "run", "start:dev"]
+```
 
+## Now lets Create a docker-compose file with all our dependencies like database and queues
 
-## Now Create a docker-compose file with all our dependencies like database and queues
 ```bash
 services:
   mysql:
