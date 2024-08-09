@@ -6,25 +6,66 @@ summary: 'How to get over saying "It works on my machine!"'
 
 How to get over saying "It works on my machine
 
-## Setup
-
-Let's take a demo NestJS application which serves a simple REST API. This app has a few dependencies, we will use MySQL for database, Redis and use docker for development.
-## Enhanced Readability and Maintainability
-
-Static typing makes code more readable and maintainable. By explicitly declaring types, developers provide a clear contract of what the code does, making it easier for others (or themselves in the future) to understand and modify the codebase.
-
-## Facilitates Tooling and Refactoring
-
-Modern IDEs leverage static typing to offer advanced features like code completion, refactoring, and static analysis. These tools can automatically detect issues, suggest fixes, and safely refactor code, enhancing developer productivity and reducing the likelihood of introducing bugs during refactoring.
-
+## Create a Dockerfile
 ```bash
 FROM node:alpine
-```
+WORKDIR /app
 
-## Performance Optimizations
+# Enable corepack for pnpm support
+RUN corepack enable
 
-Static typing can lead to better performance. Since types are known at compile time, compilers can optimize the generated code more effectively. This can result in faster execution times and lower resource consumption.
+# Copy lockfile and package.json for dependencies installation
+COPY pnpm-lock.yaml package.json ./
 
-## Conclusion
+# Install dependencies using pnpm
+RUN pnpm install
 
-Static typing offers numerous benefits that contribute to the development of robust, efficient, and maintainable software. By catching errors early, enhancing readability, facilitating tooling, and enabling optimizations, static typing is an invaluable asset for developers. As the software industry continues to mature, the importance of static typing in ensuring code quality and performance cannot be overstated. Whether you're working on a large-scale enterprise application or a small project, embracing static typing can lead to better software development outcomes.
+# Copy the rest of the application code
+COPY --chown=node:node . .
+
+# Run the application as a non-root user for security
+USER node
+
+# Expose the port that the application will run on
+EXPOSE 3000
+
+# Start the application with live reload
+CMD ["pnpm", "run", "start:dev"]
+
+
+## Now Create a docker-compose file with all our dependencies like database and queues
+```bash
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-nestjs
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=development
+    volumes:
+      - mysql_data:/var/lib/mysql
+  
+  nestjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-api-service
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_DATABASE=development
+    ports:
+      - 3000:3000
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mysql_data:
+  ```
