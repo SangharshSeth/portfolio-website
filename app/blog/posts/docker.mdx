@@ -4,38 +4,66 @@ publishedAt: '2024-04-07'
 summary: 'How to get over saying "It works on my machine!"'
 ---
 
-How to get over saying "It works on my machine
+`How to get over saying "It works on my machine"`
+
+## Setup
+- We will use a NestJS project which servers simple REST APIs, It uses MySQL for database, redis for queue. We will use docker to first create a image of this application with all the services included in it.
 
 ## Create a Dockerfile
-```bash
+
+```
 FROM node:alpine
+
 WORKDIR /app
 
-# Enable corepack for pnpm support
 RUN corepack enable
 
-# Copy lockfile and package.json for dependencies installation
 COPY pnpm-lock.yaml package.json ./
 
-# Install dependencies using pnpm
 RUN pnpm install
 
-# Copy the rest of the application code
 COPY --chown=node:node . .
 
-# Run the application as a non-root user for security
 USER node
 
-# Expose the port that the application will run on
 EXPOSE 3000
 
-# Start the application with live reload
 CMD ["pnpm", "run", "start:dev"]
 ```
 
-## Now lets Create a docker-compose file with all our dependencies like database and queues
+## Dockerfile Explanation
 
-```bash
+### `FROM node:alpine`
+- Uses the official Node.js image based on Alpine Linux, a lightweight distribution that results in a smaller Docker image.
+
+### `WORKDIR /app`
+- Sets the working directory inside the container to `/app`, where all subsequent commands will be executed.
+
+### `RUN corepack enable`
+- Enables Corepack, which provides support for package managers like `pnpm` in the Node.js environment.
+- **Alternatively**: `RUN npm install -g pnpm; RUN pnpm install`.
+
+### `COPY pnpm-lock.yaml package.json ./`
+- Copies the `pnpm-lock.yaml` and `package.json` files to the working directory in the container to cache dependencies and speed up builds.
+
+### `RUN pnpm install`
+- Installs project dependencies using `pnpm`.
+
+### `COPY --chown=node:node . .`
+- Copies the rest of the application code to the working directory, setting ownership to the `node` user for security.
+
+### `USER node`
+- Switches the container to run as the `node` user instead of root, enhancing security.
+
+### `EXPOSE 3000`
+- Exposes port `3000` on the container, where the application will listen for incoming requests.
+
+### `CMD ["pnpm", "run", "start:dev"]`
+- Starts the development server.
+
+## Create a docker-compose file to spin up all the dependencies
+
+```
 services:
   mysql:
     image: mysql

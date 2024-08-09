@@ -1,8 +1,12 @@
 import { BlogPosts } from 'app/components/posts'
+import { Inter } from 'next/font/google'
+import { IBM_Plex_Mono } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export default function Page() {
   return (
-    <section>
+    <section className={inter.className}>
       <h1 className="mb-8 text-2xl font-semibold tracking-tighter flex items-center">
         Hi👋 Everyone
       </h1>

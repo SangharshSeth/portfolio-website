@@ -4,6 +4,11 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { highlight } from 'sugar-high'
 import React from 'react'
 
+
+import { IBM_Plex_Mono } from 'next/font/google'
+const inter = IBM_Plex_Mono({subsets: ['latin'], weight: '400'})
+
+
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
     <th key={index}>{header}</th>
@@ -50,7 +55,7 @@ function RoundedImage(props) {
 
 function Code({ children, ...props }) {
   let codeHTML = highlight(children)
-  return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
+  return <code className={inter.className}  dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
 }
 
 function slugify(str) {
