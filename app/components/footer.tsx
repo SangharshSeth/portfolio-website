@@ -1,3 +1,5 @@
+import { Email, GitHub } from "@mui/icons-material"
+
 function ArrowIcon() {
   return (
     <svg
@@ -15,6 +17,7 @@ function ArrowIcon() {
   )
 }
 
+
 export default function Footer() {
   return (
     <footer className="mb-16">
@@ -26,7 +29,7 @@ export default function Footer() {
             target="_blank"
             href="mailto://sangharshbgh@gmail.com"
           >
-            <ArrowIcon />
+            <Email />
             <p className="ml-2 h-7">Mail</p>
           </a>
         </li>
@@ -37,13 +40,13 @@ export default function Footer() {
             target="_blank"
             href="https://github.com/sangharshseth"
           >
-            <ArrowIcon />
+            <GitHub />
             <p className="ml-2 h-7">Github</p>
           </a>
         </li>
       </ul>
       <p className="mt-8 text-neutral-600 dark:text-neutral-300">
-        © {new Date().getFullYear()} MIT Licensed
+        © {new Date().getFullYear()} Sangharsh Seth Inc.
       </p>
     </footer>
   )
